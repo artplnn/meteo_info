@@ -1,0 +1,121 @@
+{% extends "index.html" %}
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вывод погоды</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+
+        .container {
+            width: 50%;
+            margin: auto;
+            overflow: hidden;
+        }
+
+        .weather-container {
+            display: flex;
+            align-items: center;
+            background-color: #ffffff;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .weather-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .city {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .description {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .temperature {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .datetime {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .relative_humidity {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .wind {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="weather-container">
+        <div class="weather-details">
+            <span class="city">{{city.name}}</span>
+            <span class="description">Текущая погода</span>
+            <span class="temperature">Температура: {{meteo.current.temperature_2m}}°C</span>
+            <span class="relative_humidity">Относительная влажность: {{meteo.current.relative_humidity_2m}}%</span>
+            <span class="wind">Скорость ветра: {{meteo.current.wind_speed_10m}} м/с</span>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="weather-container">
+        <div class="weather-details">
+            <span class="description">Погода на ближайшее время</span>
+            {% for (
+            time, temperature_2m, relative_humidity_2m, wind_speed_10m
+            ) in zip(
+            meteo.hourly.time, meteo.hourly.temperature_2m, meteo.hourly.relative_humidity_2m, meteo.hourly.wind_speed_10m
+            ) %}
+            <span class="datetime">Дата и время: {{time}}</span>
+            <span class="temperature">Температура: {{temperature_2m}}°C</span>
+            <span class="relative_humidity">Относительная влажность: {{relative_humidity_2m}}%</span>
+            <span class="wind">Скорость ветра: {{wind_speed_10m}} м/с</span>
+            {% endfor %}
+
+
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="weather-container">
+        <div class="weather-details">
+            <span class="description">Погода на ближайшие дни</span>
+            {% for (
+            time, temperature_2m_min, temperature_2m_max, wind_speed_10m_max
+            ) in zip(
+            meteo.daily.time, meteo.daily.temperature_2m_min, meteo.daily.temperature_2m_max, meteo.daily.wind_speed_10m_max
+            ) %}
+            <span class="datetime">Дата: {{time}}</span>
+            <span class="temperature">Минимальная температура: {{temperature_2m_min}}°C</span>
+            <span class="temperature">Максимальная температура : {{temperature_2m_max}}°C</span>
+            <span class="wind">Максимальная скорость ветра : {{wind_speed_10m_max}} м/с</span>
+            {% endfor %}
+
+        </div>
+    </div>
+</div>
+</body>
+{% endblock %}

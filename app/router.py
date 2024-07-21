@@ -1,17 +1,19 @@
-from fastapi import APIRouter, Depends
-
+from fastapi import APIRouter, Depends, Request
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
 from app.openmeteo import OpenMeteo
-from app.schemas import City
-
+from app.schemas import SCity
 
 router = APIRouter()
+templates = Jinja2Templates(directory="templates")
+templates.env.globals["zip"] = zip
+
+@router.get("/", response_class=HTMLResponse)
+def get_index(request: Request):
+    return templates.TemplateResponse(request=request, name="index.html")
 
 
-@router.post("/search_hourly")
-async def get_temperature_from_city(city: City = Depends()):
-    return await OpenMeteo(city.name).get_hourly_data()
-
-
-@router.post("/search_current")
-async def get_current_temperature_from_city(city: City = Depends()):
-    return await OpenMeteo(city.name).get_current_data()
+@router.get("/meteo", response_class=HTMLResponse)
+async def get_meteo(request: Request, city: SCity = Depends()):
+    meteo = await OpenMeteo(city.name).get_meteo()
+    return templates.TemplateResponse(request=request, name="search.html", context={"city": city, "meteo": meteo})
